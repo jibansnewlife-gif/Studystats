@@ -1,5 +1,5 @@
 # StudyStats
-**Version:1.0.5**
+**Version:1.0.5.5**
 
 A minimal Flask-based study tracking dashboard.
 
