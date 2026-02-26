@@ -1,10 +1,14 @@
 # StudyStats
-**Version:2.0.0**
+**Version:2.0.1**
 
-changelog:
+Changelog(v2.0.0):
 
 - Added no password login system
 - Other bug fixes
+
+Changelog(v2.0.1):
+
+- Improved the login button visual
 
 A minimal Flask-based study tracking dashboard.
 
