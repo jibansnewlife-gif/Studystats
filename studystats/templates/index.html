@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>StudyStats</title>
+    <link rel="stylesheet" href="../static/static.css">
+</head>
+<body>
+    <div class="content">
+    <h1 class="tittle">StudyStats Dashboard</h1>
+
+    <br>
+    <br>
+    <br>
+
+    <div class="study">
+    <p><strong>Total Study Time:</strong> {{ total_hours }} hours</p>
+    <p><strong>Total Sessions:</strong> {{ sessions }}</p>
+
+    <h2>Study Time by Subject</h2>
+    <ul>
+        {% for subject, minutes in subject_totals.items() %}
+            <li>{{ subject }}: {{ (minutes/60)|round(2) }} hours</li>
+        {% endfor %}
+    </ul>
+
+    <h2>Log Study Session</h2>
+    <form method="POST" action="/log">
+        <label>Duration (minutes):</label>
+        <input type="number" name="duration" required>
+        <br><br>
+        <label>Subject:</label>
+        <input type="text" name="subject" required>
+        <br><br>
+        <button type="submit" lass="idk">Log</button>
+    </form>
+
+    {% if data %}
+    <h2>Session History</h2>
+    <table border="1">
+        <tr>
+            <th>Date</th>
+            <th>Duration</th>
+            <th>Subject</th>
+        </tr>
+        {% for entry in data %}
+        <tr>
+            <td>{{ entry.date }}</td>
+            <td>{{ entry.duration }} minutes</td>
+            <td>{{ entry.subject }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>No study sessions logged yet.</p>
+{% endif %}
+    </div>
+</div>
+</body>
+</html>

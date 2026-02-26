@@ -1,0 +1,58 @@
+html{
+    font-family: sans-serif;
+}
+body{
+    margin: 0;
+    font-family: Arial, sans-serif;
+    color: white;
+    background: url("background.jpg") no-repeat center center fixed;
+    background-size: cover;
+}
+
+.tittle{
+    text-align: center;
+    background: rgba(0, 0, 0, 0.8);
+    padding: 15px;
+    border-radius: 12px;
+    letter-spacing: 1px;
+}
+
+button {
+    background: #38bdf8;
+    color: black;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: #0ea5e9;
+    transform: translateY(-2px);
+}
+
+.study {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    padding: 40px;
+    border-radius: 16px;
+    width: 60%;
+    margin: 40px auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
+}
+
+.content {
+    backdrop-filter: blur(12px);
+    background: rgba(0, 0, 0, 0.7);
+    min-height: 100vh;
+    padding: 40px;
+    color: white;
+}
+
+input {
+    padding: 6px 10px;
+    border-radius: 6px;
+    border: none;
+    margin-bottom: 10px;
+}
