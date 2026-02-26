@@ -1,5 +1,5 @@
 from flask import Flask, render_template, request, redirect
-from storage import log_session
+from studystats.storage import log_session
 import json
 import os
 

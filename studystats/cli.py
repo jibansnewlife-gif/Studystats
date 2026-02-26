@@ -1,6 +1,6 @@
 import sys
-from analytics import show_stats
-from storage import log_session
+from studystats.analytics import show_stats
+from studystats.storage import log_session
 
 def main():
     if len(sys.argv) < 2:
