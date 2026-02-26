@@ -1,0 +1,74 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: url("background.jpg") no-repeat center center fixed;
+    background-size: cover;
+    color: white;
+}
+
+/* Main glass container */
+.study {
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    padding: 40px;
+    border-radius: 16px;
+    width: 60%;
+    margin: 60px auto;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6);
+}
+
+/* Headings */
+h1, h2, h3 {
+    text-align: center;
+}
+
+/* Inputs */
+input {
+    padding: 8px 12px;
+    border-radius: 8px;
+    border: none;
+    width: 200px;
+}
+
+/* Buttons */
+button {
+    background: #38bdf8;
+    color: black;
+    font-weight: 600;
+    padding: 8px 20px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s ease;
+}
+
+button:hover {
+    background: #0ea5e9;
+    transform: translateY(-2px);
+}
+
+/* Table */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 8px;
+    text-align: center;
+}
+
+th {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+tr:nth-child(even) {
+    background: rgba(255, 255, 255, 0.05);
+}
+
+/* Links */
+a {
+    color: #38bdf8;
+    text-decoration: none;
+}

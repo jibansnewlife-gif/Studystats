@@ -1,59 +1,61 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>StudyStats</title>
-    <link rel="stylesheet" href="../static/static.css">
+    <title>StudyStats Dashboard</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
 </head>
 <body>
-    <div class="content">
-    <h1 class="tittle">StudyStats Dashboard v1.0.5.5</h1>
 
-    <br>
-    <br>
-    <br>
+<div class="study">
 
-    <div class="study">
-    <p><strong>Total Study Time:</strong> {{ total_hours }} hours</p>
-    <p><strong>Total Sessions:</strong> {{ sessions }}</p>
+    <h1>StudyStats Dashboard<sub>v2.0.0</sub></h1>
 
-    <h2>Study Time by Subject</h2>
-    <ul>
-        {% for subject, minutes in subject_totals.items() %}
-            <li>{{ subject }}: {{ (minutes/60)|round(2) }} hours</li>
-        {% endfor %}
-    </ul>
+    <p><strong>User:</strong> {{ username }}</p>
+    <a href="/logout">Logout</a>
 
-    <h2>Log Study Session</h2>
-    <form method="POST" action="/log">
-        <label>Duration (minutes):</label>
-        <input type="number" name="duration" required>
-        <br><br>
-        <label>Subject:</label>
-        <input type="text" name="subject" required>
-        <br><br>
-        <button type="submit" lass="idk">Log</button>
+    <hr>
+
+    <h2>Add Study Session</h2>
+    <form action="/add" method="POST">
+        <input type="number" name="duration" placeholder="Minutes" min="1" max="1440" required>
+        <input type="text" name="subject" placeholder="Subject" required>
+        <button type="submit">Add</button>
     </form>
 
+    <hr>
+
+    <h2>Summary</h2>
+    <p>Total Study Time: {{ total_hours }} hours</p>
+    <p>Total Sessions: {{ total_sessions }}</p>
+
+    <h3>Study Time by Subject:</h3>
+    {% for subject, hours in subject_totals.items() %}
+        <p>- {{ subject }}: {{ "%.2f"|format(hours) }} hours</p>
+    {% endfor %}
+
+    <hr>
+
     {% if data %}
-    <h2>Session History</h2>
-    <table border="1">
-        <tr>
-            <th>Date</th>
-            <th>Duration</th>
-            <th>Subject</th>
-        </tr>
-        {% for entry in data %}
-        <tr>
-            <td>{{ entry.date }}</td>
-            <td>{{ entry.duration }} minutes</td>
-            <td>{{ entry.subject }}</td>
-        </tr>
-        {% endfor %}
-    </table>
-{% else %}
-    <p>No study sessions logged yet.</p>
-{% endif %}
-    </div>
+        <h2>Session History</h2>
+        <table border="1">
+            <tr>
+                <th>Date</th>
+                <th>Duration (min)</th>
+                <th>Subject</th>
+            </tr>
+            {% for entry in data %}
+            <tr>
+                <td>{{ entry.date }}</td>
+                <td>{{ entry.duration }}</td>
+                <td>{{ entry.subject }}</td>
+            </tr>
+            {% endfor %}
+        </table>
+    {% else %}
+        <p>No study sessions yet.</p>
+    {% endif %}
+
 </div>
+
 </body>
 </html>
