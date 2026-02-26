@@ -11,7 +11,10 @@
     <h1>StudyStats Dashboard<sub>v2.0.0</sub></h1>
 
     <p><strong>User:</strong> {{ username }}</p>
-    <a href="/logout">Logout</a>
+    <div class="top-bar">
+        <span>Welcome, {{ username }}</span>
+        <a href="/logout" class="logout-btn">Logout</a>
+    </div>
 
     <hr>
 
