@@ -1,3 +1,4 @@
+from studystats import __version__
 from flask import Flask, render_template, request, redirect
 from studystats.storage import log_session
 import json
@@ -38,7 +39,7 @@ def log():
     duration = int(request.form["duration"])
     subject = request.form["subject"]
     log_session(duration, subject)
-    return redirect("/")
+    return render_template("index.html",data=data,total_hours=total_hours,total_sessions=total_sessions,version=__version__)
 
 if __name__ == "__main__":
     app.run()
