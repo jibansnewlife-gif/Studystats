@@ -1,5 +1,13 @@
 # StudyStats
-**Version:2.1.0**
+**Version:2.2.0**
+
+Changelog (v2.2.0):
+
+- Added delete session feature
+- Added daily study goal tracker
+- Added XP and leveling system
+- Added study timer
+- UI improvements
 
 Changelog(v2.1.0):
 - Added Weekly study graphs

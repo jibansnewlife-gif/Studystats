@@ -2,13 +2,13 @@
 <html>
 <head>
     <title>StudyStats Dashboard</title>
-    <link rel="stylesheet" href="../static/style.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
 </head>
 <body>
 
 <div class="study">
 
-    <h1>StudyStats Dashboard<sub>v2.1.0</sub></h1>
+    <h1>StudyStats Dashboard<sub>v2.2.0</sub></h1>
 
     <div class="top-bar">
         <span>Welcome, {{ username }}</span>
@@ -19,35 +19,48 @@
 
     <h2>Add Study Session</h2>
     <form action="/add" method="POST">
-        <input type="number" name="duration" placeholder="Minutes" min="1" max="600" required>
+        <input type="number" name="duration" id="durationInput" placeholder="Minutes" min="1" max="600" required>
         <input type="text" name="subject" placeholder="Subject" required>
         <button type="submit">Add</button>
     </form>
 
+    <h3>⏱️ Timer</h3>
+    <p id="timerDisplay">0 min 0 sec</p>
+    <button onclick="startTimer()">Start</button>
+    <button onclick="stopTimer()">Stop</button>
+
+    <hr>
+
+    <h2>Level {{ level }}</h2>
+    <p>{{ xp }} XP</p>
+    <p>{{ xp_next }} XP to next level</p>
+
+    <p>🔥 Streak: {{ streak }} days</p>
+
+    <h3>Daily Goal</h3>
+    <p>{{ today_minutes }} / {{ goal }} minutes</p>
+
+    <div style="background:#333; border-radius:10px;">
+        <div style="width: {{ goal_percent }}%; background:#38bdf8; padding:6px; border-radius:10px;">
+        </div>
+    </div>
+
     <hr>
 
     <h2>{{ total_hours }} hrs</h2>
-    <p>Total Study Time</p>
     <p>Total Sessions: {{ total_sessions }}</p>
-    <p>🔥 Current Streak: {{ streak }} days</p>
 
-    <h3>Study Time by Subject:</h3>
+    <h3>Subjects:</h3>
     {% for subject, hours in subject_totals.items() %}
-        <p>- {{ subject }}: {{ "%.2f"|format(hours) }} hours</p>
+        <p>- {{ subject }}: {{ "%.2f"|format(hours) }} hrs</p>
     {% endfor %}
 
     <hr>
 
-    <h2>Weekly Study Graph</h2>
-
-<canvas 
-    id="studyChart"
-    data-dates='{{ dates | tojson }}'
-    data-minutes='{{ minutes | tojson }}'>
-</canvas>
-
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-<script src="{{ url_for('static', filename='main.js') }}"></script>
+    <h2>Weekly Graph</h2>
+    <canvas id="studyChart"
+        data-dates='{{ dates | tojson }}'
+        data-minutes='{{ minutes | tojson }}'></canvas>
 
     <hr>
 
@@ -56,22 +69,27 @@
         <table border="1">
             <tr>
                 <th>Date</th>
-                <th>Duration (min)</th>
+                <th>Duration</th>
                 <th>Subject</th>
+                <th>Action</th>
             </tr>
             {% for entry in data %}
             <tr>
                 <td>{{ entry.date }}</td>
                 <td>{{ entry.duration }}</td>
                 <td>{{ entry.subject }}</td>
+                <td>
+                    <a href="/delete/{{ loop.index0 }}">❌</a>
+                </td>
             </tr>
             {% endfor %}
         </table>
-    {% else %}
-        <p>No study sessions yet.</p>
     {% endif %}
 
 </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
 
 </body>
 </html>
