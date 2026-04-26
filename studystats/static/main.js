@@ -35,4 +35,5 @@ function stopTimer() {
     clearInterval(timer);
     document.getElementById("durationInput").value = Math.floor(seconds / 60);
     seconds = 0;
+    document.getElementById("timerDisplay").innerText = "0 min 0 sec";
 }

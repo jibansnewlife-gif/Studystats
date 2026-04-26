@@ -48,6 +48,7 @@ def home():
     username = session["username"]
     all_data = load_data()
     user_data = all_data.get(username, [])
+    user_data = [e for e in user_data if 1 <= e["duration"] <= 600]
 
     # TOTAL
     total_minutes = sum(e["duration"] for e in user_data)

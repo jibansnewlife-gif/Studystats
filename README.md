@@ -1,6 +1,11 @@
 # StudyStats
 **Version:2.2.0**
 
+Changelog(v2.2.1):
+
+-Added confirmation popup when deleting sessions
+-Other bug fixes
+
 Changelog (v2.2.0):
 
 - Added delete session feature
