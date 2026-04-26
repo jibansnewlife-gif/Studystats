@@ -164,3 +164,81 @@ td {
 body, .card, .sidebar {
     transition: 0.3s;
 }
+
+/* ===== PREMIUM EXTRAS ===== */
+
+/* Sidebar active state */
+.sidebar button.active {
+    background: rgba(56,189,248,0.15);
+    color: var(--accent);
+}
+
+/* Toggle switch */
+.theme-toggle {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px;
+    background: var(--card);
+    border-radius: 10px;
+    border: 1px solid var(--border);
+}
+
+.switch {
+    position: relative;
+    width: 46px;
+    height: 24px;
+    background: var(--border);
+    border-radius: 20px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.switch::after {
+    content: "";
+    position: absolute;
+    width: 18px;
+    height: 18px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    left: 4px;
+    transition: 0.3s;
+}
+
+/* Move knob when light mode */
+[data-theme="light"] .switch::after {
+    transform: translateX(22px);
+}
+
+/* Card grid */
+.card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 20px;
+}
+
+/* Smooth hover */
+.card:hover {
+    box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+}
+
+/* Mobile responsive */
+@media (max-width: 768px) {
+    .app {
+        flex-direction: column;
+    }
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        flex-direction: row;
+        overflow-x: auto;
+    }
+
+    .sidebar button {
+        flex: 1;
+        text-align: center;
+    }
+}

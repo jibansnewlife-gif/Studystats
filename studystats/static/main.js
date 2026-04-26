@@ -2,6 +2,13 @@
 function showSection(id) {
     document.querySelectorAll(".section").forEach(s => s.style.display = "none");
     document.getElementById(id).style.display = "block";
+
+    // Highlight active sidebar button
+    document.querySelectorAll(".sidebar button").forEach(btn => {
+        btn.classList.remove("active");
+    });
+
+    document.querySelector(`[onclick="showSection('${id}')"]`)?.classList.add("active");
 }
 
 document.addEventListener("DOMContentLoaded", () => {
@@ -19,7 +26,9 @@ document.addEventListener("DOMContentLoaded", () => {
                 labels: dates,
                 datasets: [{
                     label: "Minutes Studied",
-                    data: minutes
+                    data: minutes,
+                    backgroundColor: getComputedStyle(document.documentElement)
+                    .getPropertyValue('--accent')
                 }]
             }
         });

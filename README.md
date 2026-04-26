@@ -1,5 +1,9 @@
 # StudyStats
-**Version:2.2.0**
+**Version:2.3.1**
+
+Changelog(v2.3.1):
+
+- more UI tweaks
 
 Changelog(v2.3.0):
 
