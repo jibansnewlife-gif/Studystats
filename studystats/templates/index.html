@@ -2,15 +2,14 @@
 <html>
 <head>
     <title>StudyStats Dashboard</title>
-    <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
+    <link rel="stylesheet" href="../static/style.css">
 </head>
 <body>
 
 <div class="study">
 
-    <h1>StudyStats Dashboard<sub>v2.0.0</sub></h1>
+    <h1>StudyStats Dashboard<sub>v2.1.0</sub></h1>
 
-    <p><strong>User:</strong> {{ username }}</p>
     <div class="top-bar">
         <span>Welcome, {{ username }}</span>
         <a href="/logout" class="logout-btn">Logout</a>
@@ -20,21 +19,35 @@
 
     <h2>Add Study Session</h2>
     <form action="/add" method="POST">
-        <input type="number" name="duration" placeholder="Minutes" min="1" max="1440" required>
+        <input type="number" name="duration" placeholder="Minutes" min="1" max="600" required>
         <input type="text" name="subject" placeholder="Subject" required>
         <button type="submit">Add</button>
     </form>
 
     <hr>
 
-    <h2>Summary</h2>
-    <p>Total Study Time: {{ total_hours }} hours</p>
+    <h2>{{ total_hours }} hrs</h2>
+    <p>Total Study Time</p>
     <p>Total Sessions: {{ total_sessions }}</p>
+    <p>🔥 Current Streak: {{ streak }} days</p>
 
     <h3>Study Time by Subject:</h3>
     {% for subject, hours in subject_totals.items() %}
         <p>- {{ subject }}: {{ "%.2f"|format(hours) }} hours</p>
     {% endfor %}
+
+    <hr>
+
+    <h2>Weekly Study Graph</h2>
+
+<canvas 
+    id="studyChart"
+    data-dates='{{ dates | tojson }}'
+    data-minutes='{{ minutes | tojson }}'>
+</canvas>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="{{ url_for('static', filename='main.js') }}"></script>
 
     <hr>
 
