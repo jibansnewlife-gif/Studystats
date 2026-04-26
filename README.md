@@ -1,6 +1,12 @@
 # StudyStats
 **Version:2.2.0**
 
+Changelog(v2.3.0):
+
+- UI Overhaul
+- Added Light and Dark mode
+- Removed old background
+
 Changelog(v2.2.1):
 
 -Added confirmation popup when deleting sessions

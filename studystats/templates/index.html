@@ -1,91 +1,119 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>StudyStats Dashboard</title>
+    <title>StudyStats</title>
     <link rel="stylesheet" href="{{ url_for('static', filename='static.css') }}">
 </head>
 <body>
 
-<div class="study">
+<div class="app">
 
-    <h1>StudyStats Dashboard<sub>v2.2.0</sub></h1>
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+        <h2>StudyStats</h2>
 
-    <div class="top-bar">
-        <span>Welcome, {{ username }}</span>
+        <button onclick="showSection('dashboard')">🏠 Dashboard</button>
+        <button onclick="showSection('sessions')">📚 Sessions</button>
+        <button onclick="showSection('analytics')">📊 Analytics</button>
+
+        <hr>
+        <button onclick="toggleTheme()">🌗 Toggle Theme</button>
         <a href="/logout" class="logout-btn">Logout</a>
     </div>
 
-    <hr>
+    <!-- MAIN -->
+    <div class="main">
 
-    <h2>Add Study Session</h2>
-    <form action="/add" method="POST">
-        <input type="number" name="duration" id="durationInput" placeholder="Minutes" min="1" max="600" required>
-        <input type="text" name="subject" placeholder="Subject" required>
-        <button type="submit">Add</button>
-    </form>
+        <!-- DASHBOARD -->
+        <div id="dashboard" class="section">
+            <h1>Welcome, {{ username }}</h1>
 
-    <h3>⏱️ Timer</h3>
-    <p id="timerDisplay">0 min 0 sec</p>
-    <button onclick="startTimer()">Start</button>
-    <button onclick="stopTimer()">Stop</button>
+            <div class="card">
+                <h2>Level {{ level }}</h2>
+                <p>{{ xp }} XP</p>
+                <p>{{ xp_next }} XP to next level</p>
+            </div>
 
-    <hr>
+            <div class="card">
+                <h3>🔥 Streak: {{ streak }} days</h3>
+            </div>
 
-    <h2>Level {{ level }}</h2>
-    <p>{{ xp }} XP</p>
-    <p>{{ xp_next }} XP to next level</p>
-
-    <p>🔥 Streak: {{ streak }} days</p>
-
-    <h3>Daily Goal</h3>
-    <p>{{ today_minutes }} / {{ goal }} minutes</p>
-
-    <div style="background:#333; border-radius:10px;">
-        <div style="width: {{ goal_percent }}%; background:#38bdf8; padding:6px; border-radius:10px;">
+            <div class="card">
+                <h3>Daily Goal</h3>
+                <p>{{ today_minutes }} / {{ goal }} min</p>
+                <div class="progress">
+                    <div style="width: {{ goal_percent }}%"></div>
+                </div>
+            </div>
         </div>
+
+        <!-- SESSIONS -->
+        <div id="sessions" class="section">
+
+            <h2>Add Session</h2>
+
+            <form action="/add" method="POST">
+                <input type="number" name="duration" id="durationInput" placeholder="Minutes" required>
+                <input type="text" name="subject" placeholder="Subject" required>
+                <button type="submit">Add</button>
+            </form>
+
+            <h3>⏱️ Timer</h3>
+            <p id="timerDisplay">0 min 0 sec</p>
+            <button onclick="startTimer()">Start</button>
+            <button onclick="stopTimer()">Stop</button>
+
+            <hr>
+
+            <h2>History</h2>
+
+            <table>
+                <tr>
+                    <th>Date</th>
+                    <th>Duration</th>
+                    <th>Subject</th>
+                    <th>Action</th>
+                </tr>
+
+                {% for entry in data %}
+                <tr>
+                    <td>{{ entry.date }}</td>
+                    <td>{{ entry.duration }}</td>
+                    <td>{{ entry.subject }}</td>
+                    <td>
+                        <a href="/delete/{{ loop.index0 }}" onclick="return confirm('Delete this session?')">❌</a>
+                    </td>
+                </tr>
+                {% endfor %}
+
+            </table>
+        </div>
+
+        <!-- ANALYTICS -->
+        <div id="analytics" class="section">
+
+            <h2>📊 Analytics</h2>
+
+            <div class="card">
+                <h3>Total Time</h3>
+                <h2>{{ total_hours }} hrs</h2>
+                <p>{{ total_sessions }} sessions</p>
+            </div>
+
+            <div class="card">
+                <h3>Subjects</h3>
+                {% for subject, hours in subject_totals.items() %}
+                    <p>{{ subject }} — {{ "%.2f"|format(hours) }} hrs</p>
+                {% endfor %}
+            </div>
+
+            <canvas id="studyChart"
+                data-dates='{{ dates | tojson }}'
+                data-minutes='{{ minutes | tojson }}'></canvas>
+
+        </div>
+
     </div>
-
-    <hr>
-
-    <h2>{{ total_hours }} hrs</h2>
-    <p>Total Sessions: {{ total_sessions }}</p>
-
-    <h3>Subjects:</h3>
-    {% for subject, hours in subject_totals.items() %}
-        <p>- {{ subject }}: {{ "%.2f"|format(hours) }} hrs</p>
-    {% endfor %}
-
-    <hr>
-
-    <h2>Weekly Graph</h2>
-    <canvas id="studyChart"
-        data-dates='{{ dates | tojson }}'
-        data-minutes='{{ minutes | tojson }}'></canvas>
-
-    <hr>
-
-    {% if data %}
-        <h2>Session History</h2>
-        <table border="1">
-            <tr>
-                <th>Date</th>
-                <th>Duration</th>
-                <th>Subject</th>
-                <th>Action</th>
-            </tr>
-            {% for entry in data %}
-            <tr>
-                <td>{{ entry.date }}</td>
-                <td>{{ entry.duration }}</td>
-                <td>{{ entry.subject }}</td>
-                <td>
-                    <a href="/delete/{{ loop.index0 }}" onclick="return confirm('Delete this session?')">❌</a>
-                </td>
-            </tr>
-            {% endfor %}
-        </table>
-    {% endif %}
-
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
