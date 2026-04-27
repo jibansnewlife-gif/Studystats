@@ -629,3 +629,12 @@ canvas {
     margin-bottom: 10px;
     animation: section-in 0.3s ease both;
 }
+
+.study {
+    text-align: center;
+}
+
+.form-container {
+    display: flex;
+    justify-content: center;
+}
