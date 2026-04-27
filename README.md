@@ -1,5 +1,11 @@
 # StudyStats
 
+## v2.6.1 - Login Page UI Overhaul
+
+### Changes
+
+- Login page now looks like the main site
+
 ## v2.6.0 — Reminders + UI update II
 
 ### Added
