@@ -1,5 +1,18 @@
 # StudyStats
 
+## v2.5.0 — Insights System
+
+### Added
+- Smart insights based on study behavior
+- Real-time feedback (streaks, inactivity, subject balance)
+
+### Improved
+- UI spacing and layout
+- Sidebar animations and readability
+
+### Fixed
+- Theme toggle visibility issue
+
 ## v2.4.0 — Database Migration (SQLite)
 
 ### Added
