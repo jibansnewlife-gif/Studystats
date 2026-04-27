@@ -1,5 +1,15 @@
 # StudyStats
 
+## v2.5.1 — Enhanced Insights
+
+### Added
+- Weekly study summary
+- Consistency percentage tracking
+- Week-over-week comparison
+
+### Improved
+- Insights now provide deeper behavioral analysis
+
 ## v2.5.0 — Insights System
 
 ### Added

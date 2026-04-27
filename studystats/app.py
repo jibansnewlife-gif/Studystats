@@ -156,7 +156,49 @@ def home():
         xp_next=xp_next,
         insights=insights
     )
+    
+    # -----------------------------
+    # SMARTER INSIGHTS (v2.6)
+    # -----------------------------
 
+    # Weekly calculation
+    today = datetime.now().date()
+
+    last_7_days = [
+        (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        for i in range(7)
+    ]
+
+    prev_7_days = [
+        (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        for i in range(7, 14)
+    ]
+
+    # Minutes this week
+    this_week_minutes = sum(
+        e["duration"] for e in user_data if e["date"] in last_7_days
+    )
+
+    # Minutes last week
+    prev_week_minutes = sum(
+        e["duration"] for e in user_data if e["date"] in prev_7_days
+    )
+
+    # Weekly summary
+    insights.append(f"📅 You studied {round(this_week_minutes/60,2)} hrs this week")
+
+    # Consistency score
+    days_studied = len(set(e["date"] for e in user_data if e["date"] in last_7_days))
+    consistency = int((days_studied / 7) * 100)
+
+    insights.append(f"📈 Consistency: {consistency}% this week")
+
+    # Improvement detection
+    if prev_week_minutes > 0:
+        if this_week_minutes > prev_week_minutes:
+            insights.append("🚀 You're improving compared to last week")
+        elif this_week_minutes < prev_week_minutes:
+            insights.append("⚠️ You're studying less than last week")
 # -----------------------------
 # ADD SESSION
 # -----------------------------
