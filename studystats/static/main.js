@@ -1,6 +1,9 @@
 // -----------------------------
 // NAVIGATION
 // -----------------------------
+
+// REMOVED: alert("JS LOADED") — this was blocking and annoying
+
 function showSection(id) {
     document.querySelectorAll(".section").forEach(s => s.style.display = "none");
     document.getElementById(id).style.display = "block";
@@ -18,7 +21,7 @@ function showSection(id) {
 document.addEventListener("DOMContentLoaded", () => {
     showSection("dashboard");
 
-    // Load saved theme
+    // Theme
     const savedTheme = localStorage.getItem("theme") || "dark";
     document.documentElement.setAttribute("data-theme", savedTheme);
 
@@ -39,6 +42,14 @@ document.addEventListener("DOMContentLoaded", () => {
                         .getPropertyValue('--accent')
                 }]
             }
+        });
+    }
+
+    // FIX: Request notification permission early on page load,
+    // so it's already granted when reminders are triggered.
+    if ("Notification" in window && Notification.permission === "default") {
+        Notification.requestPermission().then(p => {
+            console.log("Notification permission on load:", p);
         });
     }
 });
@@ -84,56 +95,104 @@ function toggleTheme() {
 
 
 // -----------------------------
-// NOTIFICATION CORE (FIXED)
+// IN-APP ALERT (RELIABLE)
 // -----------------------------
-function sendNotification(title, body) {
-    if (Notification.permission !== "granted") return;
+function showInAppAlert(message) {
+    const container = document.getElementById("alerts");
+    if (!container) return;
 
-    // Try service worker (better)
-    if ("serviceWorker" in navigator) {
-        navigator.serviceWorker.getRegistration().then(reg => {
-            if (reg) {
-                reg.showNotification(title, { body: body });
-            } else {
-                // fallback
-                new Notification(title, { body: body });
-            }
-        });
-    } else {
-        // fallback
+    const div = document.createElement("div");
+    div.className = "card";
+    div.style.borderLeft = "4px solid orange";
+    div.style.marginBottom = "10px";
+    div.innerText = message;
+
+    container.appendChild(div);
+}
+
+
+// -----------------------------
+// NOTIFICATION CORE
+// FIX: now returns a Promise so callers can await it
+// -----------------------------
+async function sendNotification(title, body) {
+    console.log("🔔 Attempting notification:", title);
+
+    if (!("Notification" in window)) {
+        console.log("❌ Notifications not supported in this browser");
+        return;
+    }
+
+    // FIX: If permission isn't granted yet, request it now and wait
+    if (Notification.permission !== "granted") {
+        const permission = await Notification.requestPermission();
+        if (permission !== "granted") {
+            console.log("❌ Permission denied");
+            return;
+        }
+    }
+
+    try {
         new Notification(title, { body: body });
+        console.log("✅ Notification sent:", title);
+    } catch (e) {
+        console.log("❌ Notification error:", e);
+        // FIX: On some browsers/OS combos, Notification constructor throws.
+        // Fall back to in-app alert.
+        showInAppAlert(`🔔 ${title}: ${body}`);
     }
 }
 
 
 // -----------------------------
-// REMINDERS
+// REMINDERS (MAIN LOGIC)
+// FIX: made async so sendNotification awaits properly
 // -----------------------------
-function checkReminders() {
+async function checkReminders() {
+    console.log("🔍 checkReminders triggered");
+
     const todayMinutes = window.todayMinutes || 0;
     const streak = window.streak || 0;
 
-    Notification.requestPermission().then(permission => {
-        if (permission !== "granted") return;
+    console.log("todayMinutes:", todayMinutes);
+    console.log("streak:", streak);
 
-        if (todayMinutes === 0) {
-            sendNotification("📚 Study Reminder", "You haven't studied today!");
-        }
+    // Always show in-app alerts (reliable fallback)
+    if (todayMinutes === 0) {
+        showInAppAlert("⚠️ You haven't studied today");
+    }
 
-        if (streak >= 3 && todayMinutes === 0) {
-            sendNotification("🔥 Streak Alert", "Your streak is at risk!");
-        }
-    });
+    if (streak >= 3 && todayMinutes === 0) {
+        showInAppAlert("🔥 Your streak is at risk!");
+    }
+
+    // FIX: await each notification so they fire in order
+    if (!("Notification" in window)) {
+        console.log("❌ This browser doesn't support notifications");
+        return;
+    }
+
+    if (todayMinutes === 0) {
+        await sendNotification("📚 Study Reminder", "You haven't studied today!");
+    }
+
+    if (streak >= 3 && todayMinutes === 0) {
+        await sendNotification("🔥 Streak Alert", "Your streak is at risk!");
+    }
+
+    if (todayMinutes > 0 && streak > 0) {
+        await sendNotification("✅ Good job!", `You've studied ${todayMinutes} min today.`);
+    }
 }
 
 
 // -----------------------------
 // TEST BUTTON
+// FIX: also made async, awaits sendNotification
 // -----------------------------
-function testNotification() {
-    Notification.requestPermission().then(permission => {
-        if (permission !== "granted") return;
-
-        sendNotification("🧪 Test Notification", "Notifications are working!");
-    });
+async function testNotification() {
+    console.log("🧪 testNotification clicked");
+    await sendNotification("🧪 Test Notification", "If you see this, it works!");
 }
+
+console.log("JS loaded ✅");

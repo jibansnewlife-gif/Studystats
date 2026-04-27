@@ -1,362 +1,631 @@
+/* ============================================================
+   STUDYSTATS — Premium UI
+   Aesthetic: Refined dark intelligence. Deep navy, warm gold,
+   razor-sharp typography. Syne display + DM Sans body.
+   ============================================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&display=swap');
+
+/* ============================================================
+   TOKENS
+   ============================================================ */
 :root {
-    /* DARK MODE DEFAULT */
-    --bg: #0f172a;
-    --card: #111827;
-    --text: #e5e7eb;
-    --subtext: #9ca3af;
-    --accent: #38bdf8;
-    --border: rgba(255,255,255,0.05);
+    --bg:           #080d14;
+    --bg2:          #0d1520;
+    --surface:      #111c2d;
+    --surface2:     #162236;
+    --border:       rgba(255,255,255,0.06);
+    --border-hi:    rgba(212,175,95,0.35);
+
+    --text:         #e8edf5;
+    --subtext:      #6b7e99;
+    --muted:        #3a4d66;
+
+    --gold:         #d4af5f;
+    --gold-dim:     rgba(212,175,95,0.12);
+    --gold-glow:    rgba(212,175,95,0.25);
+
+    --teal:         #38c4b8;
+    --teal-dim:     rgba(56,196,184,0.1);
+
+    --danger:       #e05c6a;
+    --success:      #4cbb8a;
+
+    --radius:       14px;
+    --radius-sm:    8px;
+    --radius-lg:    20px;
+
+    --font-display: 'Syne', sans-serif;
+    --font-body:    'DM Sans', sans-serif;
+
+    --shadow:       0 4px 24px rgba(0,0,0,0.5);
+    --shadow-lg:    0 12px 48px rgba(0,0,0,0.7);
+
+    --transition:   0.22s cubic-bezier(0.4, 0, 0.2, 1);
 }
 
 /* LIGHT MODE */
 [data-theme="light"] {
-    --bg: #f8fafc;
-    --card: #ffffff;
-    --text: #0f172a;
-    --subtext: #475569;
-    --accent: #0284c7;
-    --border: rgba(0,0,0,0.05);
+    --bg:           #f0f4fa;
+    --bg2:          #e6ecf5;
+    --surface:      #ffffff;
+    --surface2:     #f5f8fd;
+    --border:       rgba(0,0,0,0.07);
+    --border-hi:    rgba(180,130,30,0.4);
+
+    --text:         #0d1520;
+    --subtext:      #5a6a82;
+    --muted:        #aab8cc;
+
+    --gold:         #b8891e;
+    --gold-dim:     rgba(180,130,30,0.08);
+    --gold-glow:    rgba(180,130,30,0.18);
+
+    --teal:         #1a9e94;
+    --teal-dim:     rgba(26,158,148,0.08);
+
+    --shadow:       0 4px 24px rgba(0,0,0,0.1);
+    --shadow-lg:    0 12px 48px rgba(0,0,0,0.15);
 }
 
-/* RESET */
-* {
+/* ============================================================
+   RESET & BASE
+   ============================================================ */
+*, *::before, *::after {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* BODY */
-body {
-    font-family: 'Segoe UI', sans-serif;
-    background: var(--bg);
-    color: var(--text);
-
-    /* smooth theme transition */
-    transition: background 0.3s ease, color 0.3s ease;
+html {
+    scroll-behavior: smooth;
 }
 
-/* LAYOUT */
+body {
+    font-family: var(--font-body);
+    font-size: 15px;
+    font-weight: 400;
+    line-height: 1.6;
+    background: var(--bg);
+    color: var(--text);
+    transition: background var(--transition), color var(--transition);
+    -webkit-font-smoothing: antialiased;
+
+    /* Subtle grid texture */
+    background-image:
+        linear-gradient(rgba(255,255,255,0.015) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,0.015) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+[data-theme="light"] body {
+    background-image:
+        linear-gradient(rgba(0,0,0,0.025) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.025) 1px, transparent 1px);
+    background-size: 40px 40px;
+}
+
+/* ============================================================
+   LAYOUT
+   ============================================================ */
 .app {
     display: flex;
     height: 100vh;
+    overflow: hidden;
 }
 
-/* =========================
+/* ============================================================
    SIDEBAR
-========================= */
-
+   ============================================================ */
 .sidebar {
-    width: 260px;
-    background: var(--card);
+    width: 240px;
+    flex-shrink: 0;
+    background: var(--bg2);
     border-right: 1px solid var(--border);
-    padding: 24px 16px;
+    padding: 28px 16px 24px;
     display: flex;
     flex-direction: column;
+    gap: 2px;
+    position: relative;
+    overflow: hidden;
 
-    /* animation */
-    transform: translateX(-100%);
-    animation: slideIn 0.5s ease forwards;
-
-    transition: background 0.3s ease;
+    animation: sidebar-in 0.5s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
-@keyframes slideIn {
-    to {
-        transform: translateX(0);
-    }
+/* Top gold line accent */
+.sidebar::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+}
+
+@keyframes sidebar-in {
+    from { transform: translateX(-100%); opacity: 0; }
+    to   { transform: translateX(0);    opacity: 1; }
 }
 
 .sidebar h2 {
+    font-family: var(--font-display);
+    font-weight: 800;
+    font-size: 18px;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    color: var(--gold);
     text-align: center;
-    margin-bottom: 40px;
-    font-size: 22px;
-    color: var(--accent);
+    padding: 0 8px 28px;
+    margin-bottom: 4px;
+    border-bottom: 1px solid var(--border);
 }
 
-/* SIDEBAR BUTTONS */
-
+/* Nav buttons */
 .sidebar button {
+    width: 100%;
     background: transparent;
     color: var(--subtext);
-    border: none;
-    padding: 14px;
-    margin: 6px 0;
-    text-align: left;
-    border-radius: 10px;
+    border: 1px solid transparent;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
     cursor: pointer;
-    font-size: 15px;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    text-align: left;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
 
-    transition: all 0.25s ease;
+.sidebar button::before {
+    content: '';
+    position: absolute;
+    left: 0; top: 0; bottom: 0;
+    width: 3px;
+    background: var(--gold);
+    border-radius: 0 3px 3px 0;
+    transform: scaleY(0);
+    transition: transform var(--transition);
 }
 
 .sidebar button:hover {
-    background: rgba(56,189,248,0.1);
-    color: var(--accent);
-    transform: translateX(4px);
+    background: var(--gold-dim);
+    color: var(--text);
+    border-color: var(--border-hi);
+    transform: translateX(3px);
+}
+
+.sidebar button:hover::before {
+    transform: scaleY(1);
 }
 
 .sidebar button.active {
-    background: rgba(56,189,248,0.15);
-    color: var(--accent);
+    background: var(--gold-dim);
+    color: var(--gold);
+    border-color: var(--border-hi);
 }
 
-/* LOGOUT */
+.sidebar button.active::before {
+    transform: scaleY(1);
+}
 
+.sidebar hr {
+    border: none;
+    border-top: 1px solid var(--border);
+    margin: 12px 0;
+}
+
+/* Logout */
 .logout-btn {
     margin-top: auto;
+    display: block;
     text-align: center;
-    padding: 12px;
-    border-radius: 10px;
-    background: rgba(239,68,68,0.1);
-    color: #ef4444;
+    padding: 11px 14px;
+    border-radius: var(--radius-sm);
+    background: rgba(224,92,106,0.08);
+    color: var(--danger);
     text-decoration: none;
-    transition: 0.2s;
+    font-size: 13.5px;
+    font-weight: 500;
+    border: 1px solid rgba(224,92,106,0.15);
+    transition: all var(--transition);
+    letter-spacing: 0.01em;
 }
 
 .logout-btn:hover {
-    background: rgba(239,68,68,0.2);
+    background: rgba(224,92,106,0.16);
+    border-color: rgba(224,92,106,0.35);
 }
 
-/* =========================
-   MAIN CONTENT
-========================= */
-
-.main {
-    flex: 1;
-    padding: 40px;
-    overflow-y: auto;
-}
-
-/* HEADINGS */
-
-h1 {
-    margin-bottom: 24px;
-}
-
-h2 {
-    margin-bottom: 18px;
-}
-
-/* =========================
-   CARDS
-========================= */
-
-.card {
-    background: var(--card);
-    border: 1px solid var(--border);
-    border-radius: 16px;
-    padding: 24px;
-    margin-bottom: 28px;
-
-    transition: all 0.25s ease, background 0.3s ease;
-}
-
-.card:hover {
-    border-color: rgba(56,189,248,0.3);
-    transform: translateY(-3px);
-}
-
-/* =========================
-   FORM
-========================= */
-
-form {
-    margin-bottom: 24px;
-}
-
-input {
-    padding: 12px;
-    border-radius: 10px;
-    border: none;
-    background: var(--card);
-    color: var(--text);
-    margin-right: 12px;
-    border: 1px solid var(--border);
-
-    transition: all 0.2s ease;
-}
-
-input:focus {
-    outline: none;
-    border-color: var(--accent);
-}
-
-/* BUTTON */
-
-button {
-    background: var(--accent);
-    color: black;
-    font-weight: 600;
-    padding: 10px 20px;
-    border: none;
-    border-radius: 10px;
-    cursor: pointer;
-
-    transition: all 0.2s ease;
-}
-
-button:hover {
-    background: #0ea5e9;
-    transform: translateY(-1px);
-}
-
-/* =========================
-   INSIGHTS
-========================= */
-
-.card ul {
-    margin-top: 10px;
-    padding-left: 18px;
-}
-
-.card li {
-    margin: 8px 0;
-    font-size: 15px;
-}
-
-/* =========================
-   TABLE
-========================= */
-
-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 18px;
-    background: var(--card);
-    border-radius: 12px;
-    overflow: hidden;
-
-    transition: background 0.3s ease;
-}
-
-th {
-    background: rgba(255,255,255,0.05);
-    padding: 14px;
-    text-align: left;
-    color: var(--subtext);
-}
-
-td {
-    padding: 14px;
-    border-top: 1px solid var(--border);
-}
-
-tr:hover {
-    background: rgba(255,255,255,0.03);
-}
-
-/* =========================
-   PROGRESS BAR
-========================= */
-
-.progress {
-    width: 100%;
-    height: 12px;
-    background: rgba(255,255,255,0.05);
-    border-radius: 12px;
-    margin-top: 12px;
-}
-
-.progress div {
-    height: 100%;
-    background: linear-gradient(90deg, #38bdf8, #0ea5e9);
-    border-radius: 12px;
-}
-
-/* =========================
-   SCROLLBAR
-========================= */
-
-::-webkit-scrollbar {
-    width: 6px;
-}
-
-::-webkit-scrollbar-thumb {
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-}
-
-/* =========================
-   THEME TOGGLE SWITCH
-========================= */
-
+/* Theme toggle */
 .theme-toggle {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    margin-top: 20px;
+    padding: 10px 4px;
 }
 
-/* hide default checkbox */
-.theme-toggle input {
-    display: none;
+.theme-toggle span {
+    font-size: 13px;
+    color: var(--subtext);
 }
-
-/* switch background */
-.toggle-slider {
-    width: 46px;
-    height: 24px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 20px;
-    position: relative;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-/* circle */
-.toggle-slider::before {
-    content: "";
-    width: 18px;
-    height: 18px;
-    background: white;
-    border-radius: 50%;
-    position: absolute;
-    top: 3px;
-    left: 4px;
-    transition: 0.3s;
-}
-
-/* when checked */
-.theme-toggle input:checked + .toggle-slider {
-    background: var(--accent);
-}
-
-.theme-toggle input:checked + .toggle-slider::before {
-    transform: translateX(22px);
-}
-
-/* =========================
-   SIMPLE TOGGLE SWITCH (FIX)
-========================= */
 
 .switch {
-    width: 46px;
-    height: 24px;
-    background: rgba(255,255,255,0.15);
+    width: 42px;
+    height: 22px;
+    background: var(--muted);
     border-radius: 20px;
     position: relative;
     cursor: pointer;
-    transition: 0.3s;
+    transition: background var(--transition);
 }
 
-/* circle */
 .switch::before {
-    content: "";
-    width: 18px;
-    height: 18px;
+    content: '';
+    width: 16px;
+    height: 16px;
     background: white;
     border-radius: 50%;
     position: absolute;
     top: 3px;
-    left: 4px;
-    transition: 0.3s;
+    left: 3px;
+    transition: transform var(--transition);
+    box-shadow: 0 1px 4px rgba(0,0,0,0.3);
 }
 
-/* LIGHT MODE STATE */
 [data-theme="light"] .switch {
-    background: var(--accent);
+    background: var(--gold);
 }
 
 [data-theme="light"] .switch::before {
-    transform: translateX(22px);
+    transform: translateX(20px);
+}
+
+/* ============================================================
+   MAIN CONTENT
+   ============================================================ */
+.main {
+    flex: 1;
+    padding: 36px 40px;
+    overflow-y: auto;
+    scrollbar-width: thin;
+    scrollbar-color: var(--muted) transparent;
+}
+
+.main::-webkit-scrollbar { width: 5px; }
+.main::-webkit-scrollbar-thumb {
+    background: var(--muted);
+    border-radius: 10px;
+}
+
+/* ============================================================
+   HEADINGS
+   ============================================================ */
+h1 {
+    font-family: var(--font-display);
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 28px;
+    color: var(--text);
+}
+
+h1 span { color: var(--gold); }
+
+h2 {
+    font-family: var(--font-display);
+    font-size: 16px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--subtext);
+    margin-bottom: 16px;
+}
+
+h3 {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--subtext);
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    margin-bottom: 10px;
+}
+
+/* ============================================================
+   CARDS
+   ============================================================ */
+.card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    padding: 24px 28px;
+    margin-bottom: 20px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color var(--transition), transform var(--transition), box-shadow var(--transition), background var(--transition);
+}
+
+/* Subtle top shimmer line */
+.card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 20px; right: 20px;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
+    pointer-events: none;
+}
+
+.card:hover {
+    border-color: var(--border-hi);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow);
+}
+
+/* Stat value inside card */
+.card h2 {
+    font-family: var(--font-display);
+    font-size: 36px;
+    font-weight: 800;
+    color: var(--gold);
+    letter-spacing: -0.03em;
+    text-transform: none;
+    margin-bottom: 4px;
+}
+
+.card p {
+    color: var(--subtext);
+    font-size: 13.5px;
+}
+
+/* ============================================================
+   INSIGHTS LIST
+   ============================================================ */
+.card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.card li {
+    font-size: 14px;
+    color: var(--text);
+    padding: 10px 14px;
+    background: var(--surface2);
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--gold);
+    transition: all var(--transition);
+}
+
+.card li:hover {
+    background: var(--gold-dim);
+    border-left-color: var(--gold);
+}
+
+/* ============================================================
+   FORM & INPUTS
+   ============================================================ */
+form {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    align-items: center;
+    margin-bottom: 28px;
+}
+
+input {
+    padding: 11px 16px;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border);
+    background: var(--surface2);
+    color: var(--text);
+    font-family: var(--font-body);
+    font-size: 14px;
+    outline: none;
+    transition: border-color var(--transition), box-shadow var(--transition);
+    min-width: 140px;
+}
+
+input::placeholder { color: var(--muted); }
+
+input:focus {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px var(--gold-glow);
+}
+
+/* ============================================================
+   BUTTONS
+   ============================================================ */
+button {
+    padding: 11px 22px;
+    background: var(--gold);
+    color: #080d14;
+    font-family: var(--font-body);
+    font-size: 13.5px;
+    font-weight: 600;
+    border: none;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    letter-spacing: 0.02em;
+    transition: all var(--transition);
+    position: relative;
+    overflow: hidden;
+}
+
+button::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: rgba(255,255,255,0);
+    transition: background var(--transition);
+}
+
+button:hover {
+    background: #e0c070;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 16px var(--gold-glow);
+}
+
+button:hover::after {
+    background: rgba(255,255,255,0.06);
+}
+
+button:active {
+    transform: translateY(0);
+}
+
+/* ============================================================
+   TIMER
+   ============================================================ */
+#timerDisplay {
+    font-family: var(--font-display);
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--teal);
+    letter-spacing: -0.02em;
+    margin: 10px 0 14px;
+}
+
+/* ============================================================
+   TABLE
+   ============================================================ */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    background: var(--surface);
+    border-radius: var(--radius);
+    overflow: hidden;
+    border: 1px solid var(--border);
+    transition: background var(--transition);
+}
+
+thead { background: var(--surface2); }
+
+th {
+    padding: 13px 18px;
+    text-align: left;
+    font-family: var(--font-body);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--subtext);
+    border-bottom: 1px solid var(--border);
+}
+
+td {
+    padding: 13px 18px;
+    font-size: 14px;
+    border-top: 1px solid var(--border);
+    transition: background var(--transition);
+}
+
+tbody tr:hover td {
+    background: var(--gold-dim);
+}
+
+tbody tr:hover td:first-child {
+    border-left: 3px solid var(--gold);
+    padding-left: 15px;
+}
+
+td a {
+    color: var(--danger);
+    font-size: 16px;
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity var(--transition);
+}
+
+td a:hover { opacity: 1; }
+
+/* ============================================================
+   PROGRESS BAR
+   ============================================================ */
+.progress {
+    width: 100%;
+    height: 8px;
+    background: var(--surface2);
+    border-radius: 20px;
+    margin-top: 14px;
+    overflow: hidden;
+    border: 1px solid var(--border);
+}
+
+.progress div {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), #f0d080);
+    border-radius: 20px;
+    position: relative;
+    transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Shimmer on progress bar */
+.progress div::after {
+    content: '';
+    position: absolute;
+    top: 0; left: -100%; bottom: 0;
+    width: 60%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.35), transparent);
+    animation: shimmer 2.5s infinite;
+}
+
+@keyframes shimmer {
+    to { left: 200%; }
+}
+
+/* ============================================================
+   SECTION FADE-IN
+   ============================================================ */
+.section {
+    animation: section-in 0.35s cubic-bezier(0.4, 0, 0.2, 1) both;
+}
+
+@keyframes section-in {
+    from { opacity: 0; transform: translateY(12px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ============================================================
+   STREAK & LEVEL BADGES
+   ============================================================ */
+.card h3 {
+    font-family: var(--font-display);
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--gold);
+    text-transform: none;
+    letter-spacing: -0.01em;
+}
+
+/* ============================================================
+   SCROLLBAR (WEBKIT)
+   ============================================================ */
+::-webkit-scrollbar          { width: 5px; height: 5px; }
+::-webkit-scrollbar-track    { background: transparent; }
+::-webkit-scrollbar-thumb    { background: var(--muted); border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: var(--subtext); }
+
+/* ============================================================
+   CANVAS / CHART
+   ============================================================ */
+canvas {
+    margin-top: 20px;
+    border-radius: var(--radius-sm);
+}
+
+/* ============================================================
+   UTILITY — ALERT CARDS (injected by JS)
+   ============================================================ */
+#alerts .card {
+    border-left: 3px solid var(--gold);
+    padding: 14px 18px;
+    font-size: 14px;
+    margin-bottom: 10px;
+    animation: section-in 0.3s ease both;
 }
