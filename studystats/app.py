@@ -71,7 +71,7 @@ def home():
         k: round(v / 60, 2) for k, v in subject_totals.items()
     }
 
-    # Daily data for chart
+    # Daily data
     daily_data = {}
     for e in user_data:
         daily_data[e["date"]] = daily_data.get(e["date"], 0) + e["duration"]
@@ -95,7 +95,7 @@ def home():
     # -----------------------------
     # DAILY GOAL
     # -----------------------------
-    goal = 120  # minutes
+    goal = 120
     today_str = today.strftime("%Y-%m-%d")
 
     today_minutes = sum(
@@ -110,6 +110,33 @@ def home():
     xp = total_minutes
     level = xp // 500 + 1
     xp_next = (level * 500) - xp
+
+    # -----------------------------
+    # INSIGHTS (v2.5)
+    # -----------------------------
+    insights = []
+
+    if today_minutes == 0:
+        insights.append("⚠️ You haven't studied today")
+
+    if streak >= 3:
+        insights.append(f"🔥 You're on a {streak}-day streak")
+
+    if subject_totals:
+        most = max(subject_totals, key=subject_totals.get)
+        least = min(subject_totals, key=subject_totals.get)
+
+        if subject_totals[most] > subject_totals[least] * 2:
+            insights.append(f"📊 You focus a lot on {most}, consider more {least}")
+
+    if today_minutes >= 180:
+        insights.append("💪 Great effort today!")
+
+    if total_sessions < 3:
+        insights.append("🚀 Start building your study habit!")
+
+    if not insights:
+        insights.append("👍 You're doing well, keep going!")
 
     return render_template(
         "index.html",
@@ -126,7 +153,8 @@ def home():
         goal_percent=goal_percent,
         xp=xp,
         level=level,
-        xp_next=xp_next
+        xp_next=xp_next,
+        insights=insights
     )
 
 # -----------------------------
@@ -144,7 +172,7 @@ def add():
     except:
         return redirect("/")
 
-    duration = max(1, min(duration, 300))  # 1–300 min
+    duration = max(1, min(duration, 300))
 
     subject = request.form["subject"]
     date = datetime.now().strftime("%Y-%m-%d")
@@ -183,8 +211,7 @@ def delete(id):
 @app.route("/login", methods=["GET", "POST"])
 def login():
     if request.method == "POST":
-        username = request.form["username"]
-        session["username"] = username
+        session["username"] = request.form["username"]
         return redirect("/")
 
     return render_template("login.html")

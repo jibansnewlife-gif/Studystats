@@ -26,6 +26,14 @@
 
     <!-- MAIN -->
     <div class="main">
+        <div class="card">
+            <h2>🧠 Insights</h2>
+            <ul>
+                {% for i in insights %}
+                    <li>{{ i }}</li>
+                {% endfor %}
+            </ul>
+        </div>
 
         <!-- DASHBOARD -->
         <div id="dashboard" class="section">
