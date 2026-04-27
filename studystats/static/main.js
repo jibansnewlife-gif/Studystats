@@ -1,9 +1,10 @@
+// -----------------------------
 // NAVIGATION
+// -----------------------------
 function showSection(id) {
     document.querySelectorAll(".section").forEach(s => s.style.display = "none");
     document.getElementById(id).style.display = "block";
 
-    // Highlight active sidebar button
     document.querySelectorAll(".sidebar button").forEach(btn => {
         btn.classList.remove("active");
     });
@@ -11,8 +12,15 @@ function showSection(id) {
     document.querySelector(`[onclick="showSection('${id}')"]`)?.classList.add("active");
 }
 
+// -----------------------------
+// ON LOAD
+// -----------------------------
 document.addEventListener("DOMContentLoaded", () => {
     showSection("dashboard");
+
+    // Load saved theme
+    const savedTheme = localStorage.getItem("theme") || "dark";
+    document.documentElement.setAttribute("data-theme", savedTheme);
 
     // Chart
     const ctx = document.getElementById("studyChart");
@@ -28,7 +36,7 @@ document.addEventListener("DOMContentLoaded", () => {
                     label: "Minutes Studied",
                     data: minutes,
                     backgroundColor: getComputedStyle(document.documentElement)
-                    .getPropertyValue('--accent')
+                        .getPropertyValue('--accent')
                 }]
             }
         });
@@ -36,7 +44,9 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 
 
+// -----------------------------
 // TIMER
+// -----------------------------
 let timer;
 let seconds = 0;
 
@@ -56,6 +66,10 @@ function stopTimer() {
     document.getElementById("timerDisplay").innerText = "0 min 0 sec";
 }
 
+
+// -----------------------------
+// THEME TOGGLE
+// -----------------------------
 function toggleTheme() {
     const current = document.documentElement.getAttribute("data-theme");
 
@@ -66,4 +80,60 @@ function toggleTheme() {
         document.documentElement.setAttribute("data-theme", "light");
         localStorage.setItem("theme", "light");
     }
+}
+
+
+// -----------------------------
+// NOTIFICATION CORE (FIXED)
+// -----------------------------
+function sendNotification(title, body) {
+    if (Notification.permission !== "granted") return;
+
+    // Try service worker (better)
+    if ("serviceWorker" in navigator) {
+        navigator.serviceWorker.getRegistration().then(reg => {
+            if (reg) {
+                reg.showNotification(title, { body: body });
+            } else {
+                // fallback
+                new Notification(title, { body: body });
+            }
+        });
+    } else {
+        // fallback
+        new Notification(title, { body: body });
+    }
+}
+
+
+// -----------------------------
+// REMINDERS
+// -----------------------------
+function checkReminders() {
+    const todayMinutes = window.todayMinutes || 0;
+    const streak = window.streak || 0;
+
+    Notification.requestPermission().then(permission => {
+        if (permission !== "granted") return;
+
+        if (todayMinutes === 0) {
+            sendNotification("📚 Study Reminder", "You haven't studied today!");
+        }
+
+        if (streak >= 3 && todayMinutes === 0) {
+            sendNotification("🔥 Streak Alert", "Your streak is at risk!");
+        }
+    });
+}
+
+
+// -----------------------------
+// TEST BUTTON
+// -----------------------------
+function testNotification() {
+    Notification.requestPermission().then(permission => {
+        if (permission !== "granted") return;
+
+        sendNotification("🧪 Test Notification", "Notifications are working!");
+    });
 }

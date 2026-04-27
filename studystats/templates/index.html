@@ -11,6 +11,8 @@
     <!-- SIDEBAR -->
     <div class="sidebar">
         <h2>StudyStats</h2>
+        <button onclick="checkReminders()">🔔 Test Reminders</button>
+<button onclick="testNotification()">🧪 Quick Test</button>
 
         <button onclick="showSection('dashboard')">🏠 Dashboard</button>
         <button onclick="showSection('sessions')">📚 Sessions</button>
@@ -126,7 +128,10 @@
 
     </div>
 </div>
-
+<script id="injectData">
+    window.todayMinutes = {{ today_minutes }};
+    window.streak = {{ streak }};
+</script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script src="{{ url_for('static', filename='main.js') }}"></script>
 

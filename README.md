@@ -1,5 +1,16 @@
 # StudyStats
 
+## v2.6.0-beta — Reminders (Pre-release)
+
+### Added
+- Browser-based notification reminders
+- Streak risk alerts
+
+### Notes
+- Notifications may not work in all environments
+- Requires browser permission + HTTPS
+- Still under testing
+
 ## v2.5.1 — Enhanced Insights
 
 ### Added
