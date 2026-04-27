@@ -1,5 +1,23 @@
 # StudyStats
 
+## v2.6.0 — Reminders + UI update II
+
+### Added
+- Reminder System
+
+### Improved
+- Overhauled UI
+
+## v2.6.1-beta — Reminders (Pre-release)
+
+### Changed
+- just dev testing
+
+### Notes
+- Notifications may not work in all environments
+- Requires browser permission + HTTPS
+- Still under testing
+
 ## v2.6.0-beta — Reminders (Pre-release)
 
 ### Added
