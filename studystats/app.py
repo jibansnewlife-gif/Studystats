@@ -1,96 +1,112 @@
 from flask import Flask, render_template, request, redirect, session
-import json
-import os
+import sqlite3
 from datetime import datetime, timedelta
-from collections import defaultdict
 
-app = Flask(__name__)
+app = Flask(__name__, static_folder="static", template_folder="templates")
 app.secret_key = "dev-secret-key"
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-DATA_FILE = os.path.join(BASE_DIR, "data.json")
+# -----------------------------
+# DATABASE SETUP
+# -----------------------------
+def init_db():
+    conn = sqlite3.connect("data.db")
+    c = conn.cursor()
 
+    c.execute("""
+    CREATE TABLE IF NOT EXISTS sessions (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        username TEXT,
+        date TEXT,
+        duration INTEGER,
+        subject TEXT
+    )
+    """)
 
-def load_data():
-    if not os.path.exists(DATA_FILE):
-        with open(DATA_FILE, "w") as f:
-            json.dump({}, f)
-    with open(DATA_FILE, "r") as f:
-        return json.load(f)
+    conn.commit()
+    conn.close()
 
+init_db()
 
-def save_data(data):
-    with open(DATA_FILE, "w") as f:
-        json.dump(data, f, indent=4)
-
-
-@app.route("/login", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        username = request.form["username"].strip()
-        if username:
-            session["username"] = username
-            return redirect("/")
-    return render_template("login.html")
-
-
-@app.route("/logout")
-def logout():
-    session.pop("username", None)
-    return redirect("/login")
-
-
+# -----------------------------
+# HOME
+# -----------------------------
 @app.route("/")
 def home():
     if "username" not in session:
         return redirect("/login")
 
     username = session["username"]
-    all_data = load_data()
-    user_data = all_data.get(username, [])
-    user_data = [e for e in user_data if 1 <= e["duration"] <= 600]
 
-    # TOTAL
+    conn = sqlite3.connect("data.db")
+    c = conn.cursor()
+
+    c.execute("""
+        SELECT id, date, duration, subject
+        FROM sessions
+        WHERE username=?
+        ORDER BY id DESC
+    """, (username,))
+
+    rows = c.fetchall()
+    conn.close()
+
+    user_data = [
+        {"id": r[0], "date": r[1], "duration": r[2], "subject": r[3]}
+        for r in rows
+    ]
+
+    # -----------------------------
+    # STATS
+    # -----------------------------
     total_minutes = sum(e["duration"] for e in user_data)
     total_hours = round(total_minutes / 60, 2)
     total_sessions = len(user_data)
 
-    # SUBJECTS
+    # Subject totals
     subject_totals = {}
     for e in user_data:
-        subject_totals[e["subject"]] = subject_totals.get(e["subject"], 0) + e["duration"] / 60
-    subject_totals = dict(sorted(subject_totals.items(), key=lambda x: x[1], reverse=True))
+        subject_totals[e["subject"]] = subject_totals.get(e["subject"], 0) + e["duration"]
 
-    # GRAPH
-    daily_data = defaultdict(int)
-    for i in range(7):
-        day = (datetime.now() - timedelta(days=i)).strftime("%Y-%m-%d")
-        daily_data[day] = 0
+    subject_totals = {
+        k: round(v / 60, 2) for k, v in subject_totals.items()
+    }
 
+    # Daily data for chart
+    daily_data = {}
     for e in user_data:
-        if e["date"] in daily_data:
-            daily_data[e["date"]] += e["duration"]
+        daily_data[e["date"]] = daily_data.get(e["date"], 0) + e["duration"]
 
-    dates = list(daily_data.keys())
-    minutes = list(daily_data.values())
+    dates = list(daily_data.keys())[::-1]
+    minutes = list(daily_data.values())[::-1]
 
+    # -----------------------------
     # STREAK
+    # -----------------------------
     streak = 0
-    d = datetime.now()
-    dates_set = set(e["date"] for e in user_data)
+    today = datetime.now().date()
 
-    while d.strftime("%Y-%m-%d") in dates_set:
-        streak += 1
-        d -= timedelta(days=1)
+    for i in range(100):
+        day = (today - timedelta(days=i)).strftime("%Y-%m-%d")
+        if any(e["date"] == day for e in user_data):
+            streak += 1
+        else:
+            break
 
+    # -----------------------------
     # DAILY GOAL
-    today = datetime.now().strftime("%Y-%m-%d")
-    today_minutes = sum(e["duration"] for e in user_data if e["date"] == today)
+    # -----------------------------
+    goal = 120  # minutes
+    today_str = today.strftime("%Y-%m-%d")
 
-    goal = 120
-    goal_percent = min(100, int((today_minutes / goal) * 100))
+    today_minutes = sum(
+        e["duration"] for e in user_data if e["date"] == today_str
+    )
 
+    goal_percent = min(int((today_minutes / goal) * 100), 100)
+
+    # -----------------------------
     # XP SYSTEM
+    # -----------------------------
     xp = total_minutes
     level = xp // 500 + 1
     xp_next = (level * 500) - xp
@@ -113,48 +129,76 @@ def home():
         xp_next=xp_next
     )
 
-
+# -----------------------------
+# ADD SESSION
+# -----------------------------
 @app.route("/add", methods=["POST"])
 def add():
     if "username" not in session:
         return redirect("/login")
 
     username = session["username"]
-    duration = int(request.form["duration"])
-    subject = request.form["subject"].strip()
 
-    if duration < 1 or duration > 600:
+    try:
+        duration = int(request.form["duration"])
+    except:
         return redirect("/")
 
-    all_data = load_data()
-    if username not in all_data:
-        all_data[username] = []
+    duration = max(1, min(duration, 300))  # 1–300 min
 
-    all_data[username].append({
-        "date": datetime.now().strftime("%Y-%m-%d"),
-        "duration": duration,
-        "subject": subject
-    })
+    subject = request.form["subject"]
+    date = datetime.now().strftime("%Y-%m-%d")
 
-    save_data(all_data)
-    return redirect("/")
+    conn = sqlite3.connect("data.db")
+    c = conn.cursor()
 
+    c.execute("""
+        INSERT INTO sessions (username, date, duration, subject)
+        VALUES (?, ?, ?, ?)
+    """, (username, date, duration, subject))
 
-# DELETE FEATURE
-@app.route("/delete/<int:index>")
-def delete(index):
-    if "username" not in session:
-        return redirect("/login")
-
-    username = session["username"]
-    data = load_data()
-
-    if username in data and 0 <= index < len(data[username]):
-        data[username].pop(index)
-        save_data(data)
+    conn.commit()
+    conn.close()
 
     return redirect("/")
 
+# -----------------------------
+# DELETE SESSION
+# -----------------------------
+@app.route("/delete/<int:id>")
+def delete(id):
+    conn = sqlite3.connect("data.db")
+    c = conn.cursor()
 
+    c.execute("DELETE FROM sessions WHERE id=?", (id,))
+
+    conn.commit()
+    conn.close()
+
+    return redirect("/")
+
+# -----------------------------
+# LOGIN
+# -----------------------------
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        username = request.form["username"]
+        session["username"] = username
+        return redirect("/")
+
+    return render_template("login.html")
+
+# -----------------------------
+# LOGOUT
+# -----------------------------
+@app.route("/logout")
+def logout():
+    session.pop("username", None)
+    return redirect("/login")
+
+# -----------------------------
+# RUN
+# -----------------------------
 if __name__ == "__main__":
     app.run(debug=True)

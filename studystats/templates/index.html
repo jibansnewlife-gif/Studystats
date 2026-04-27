@@ -84,7 +84,7 @@
                     <td>{{ entry.duration }}</td>
                     <td>{{ entry.subject }}</td>
                     <td>
-                        <a href="/delete/{{ loop.index0 }}" onclick="return confirm('Delete this session?')">❌</a>
+                        <a href="/delete/{{ entry.id }}" onclick="return confirm('Delete this session?')">❌</a>
                     </td>
                 </tr>
                 {% endfor %}
